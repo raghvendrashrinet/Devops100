@@ -61,3 +61,40 @@ FROM pg_stat_activity
 WHERE state != 'idle';
 ```
 - Analyze the performance: Prepend EXPLAIN ANALYZE to your slow query. It tells you exactly where the execution plan spent its time and if it is missing a critical table index.
+
+
+---
+
+### Creating Database  
+Once postgres running , you first need to log into the PostgreSQL interactive terminal `(psql)` as the default `admin` user:
+```
+sudo -i -u postgres psql
+```
+
+#### Create the user with a password:
+```
+CREATE USER myuser WITH PASSWORD 'mypassword';
+
+or by command line
+
+createuser --interactive --username=postgres
+
+```
+
+#### Grant Permissions (Optional):
+```
+ALTER USER myuser WITH SUPERUSER;
+```
+
+
+#### 1. Creating a Database
+```sql
+-- Create a new database named 'company_db'
+CREATE DATABASE kodekloud_db6;
+
+-- List all databases to verify it was created
+\l
+
+-- Connect (switch) to your new database
+\c company_db;
+```
