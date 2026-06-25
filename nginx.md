@@ -27,7 +27,22 @@ The Main Configuration File , The main entry point for Nginx is located at:
 
   Inside this file, Nginx uses include directives to pull in modular configuration files, typically located in  
     ` /etc/nginx/conf.d/ ` or  `/etc/nginx/sites-enabled/.`  
+**web server root directory for finding files**
+ n a standard web server configuration, you define this inside your `server` or `location` block.
+ ```
+http {
+    server {
+        listen 80;
+        server_name example.com;
 
+        # Points directly to the local folder holding index.html
+        root /var/www/html;   <-- This
+
+        location / {
+            try_files $uri $uri/ =404;
+        }
+    }
+```
 **The Call Flow (How a Request is Processed)**  
 When a user types a URL (e.g., http://example.com/images/logo.png), Nginx processes the request sequentially through a top-down hierarchy:  
 ```
