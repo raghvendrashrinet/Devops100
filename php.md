@@ -26,7 +26,9 @@ sudo systemctl status php8.2-fpm
 sudo systemctl restart php8.2-fpm
 ```
 #### Core Configuration File (php.ini)
-The global behavior of PHP is governed by the `php.ini` file. In a PHP-FPM setup, this is typically located at `/etc/php/8.2/fpm/php.ini.`
+The global behavior of PHP is governed by the `php.ini` file. In a PHP-FPM setup, this is typically located at 
+- Ubuntu: `/etc/php/8.2/fpm/php.ini.`
+- CentOS/RHEL: '/etc/php-fpm.conf`
 ```ini,TOML
 # Resource Limits
 memory_limit = 256M      ; Maximum amount of memory a script may consume
