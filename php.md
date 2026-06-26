@@ -43,8 +43,8 @@ log_errors = On          ; Ensures errors are recorded in logs instead
 ```
 #### PHP-FPM Pool Configuration (www.conf)
 PHP-FPM uses pools to isolate environments. The default pool configuration file is usually located at 
-`/etc/php/8.2/fpm/pool.d/www.conf.`
-
+- Ubuntu/Debian: `/etc/php/8.2/fpm/pool.d/www.conf.`
+- CentOS/RHEL:`/etc/php-fpm.d/www.conf`
  ##### Connection Configuration (The "Where" part)
  This directive tells PHP-FPM where to listen for incoming FastCGI requests from Nginx:
  ```Ini,TOML
