@@ -57,7 +57,7 @@ When you install Docker, it automatically creates a default virtual network card
 #### Main Types of Docker Networks
 You can specify different network drivers depending on your architectural needs:
 - **Bridge (Default)**: Best for isolated containers running on the same single host machine.
-- **Host**: Completely removes network isolation between the container and the Docker host. The container uses the host’s IP and ports directly (e.g., a container app running on port 80 runs directly on your computer's port 80)
+- **Host**: Completely removes network isolation between the container and the Docker host. The container uses the host’s IP and ports directly (e.g., a container app running on port 80 runs directly on your computer's port 80)  
 - **Overlay**: Connects multiple Docker daemons across entirely different physical servers. This is the backbone used for clustered container setups like Docker Swarm.
 - **None**: Completely shuts off all networking capabilities for the container. Ideal for high-security, isolated batch processing tasks.
 
@@ -114,9 +114,9 @@ An overlay network connects containers running across different physical compute
   driver is a pluggable software component that tells Docker how to implement and manage core infrastructure resources like networking, storage, and logging.
   * Docker uses a pluggable architecture*
     ##### 1. Network Drivers (How containers talk)
-    -` bridge driver`: Tells Docker to use Linux bridging tools (brctl) and IPTables rules to create an isolated virtual switch on your local machine.
-    -` overlay driver`: Tells Docker to use VXLAN encapsulation tunnels to stretch a network across multiple separate servers [authId: overlay].
-    - `macvlan driver`: Tells Docker to bypass virtual routing entirely and assign an actual, physical MAC address to a container, making it look like a physical machine on your home    router.
+    - ` bridge driver`: Tells Docker to use Linux bridging tools (brctl) and IPTables rules to create an isolated virtual switch on your local machine.   
+    - ` overlay driver`: Tells Docker to use VXLAN encapsulation tunnels to stretch a network across multiple separate servers [authId: overlay].    
+    - ` macvlan driver`: Tells Docker to bypass virtual routing entirely and assign an actual, physical MAC address to a container, making it look like a physical machine on your home    router.
     ##### Others  Storage Drivers(How files are written) &  Logging Drivers (Where terminal outputs go)
 
     ---
@@ -124,14 +124,14 @@ An overlay network connects containers running across different physical compute
    **  let's create two separate Docker networks on your machine, each explicitly assigned a different driver using the -d (driver) flag
    ```
      # Create a network using the local virtual 'bridge' driver
-     docker network create -d bridge local-bridge-net
+      docker network create -d bridge local-bridge-net
 
      # Create a network using the 'host' driver (built-in, no creation needed, but we reference it)
    ```
 1. Case 1 **Using the bridge Driver**
    The bridge driver sets up an isolated virtual room. The container gets its own hidden, private IP address. To access it from your computer, you must use port mapping (-p).
    ```
-    docker run -d --name bridge-web --network local-bridge-net -p 8080:80 nginx
+     docker run -d --name bridge-web --network local-bridge-net -p 8080:80 nginx
    ```
    What the Driver Does Behind the Scenes:?
    - It requests the Linux kernel to create a virtual network interface (veth pair)
