@@ -26,7 +26,10 @@ The Main Configuration File , The main entry point for Nginx is located at:
     ` /etc/nginx/nginx.conf `  
 
   Inside this file, Nginx uses include directives to pull in modular configuration files, typically located in  
-    ` /etc/nginx/conf.d/ ` or  `/etc/nginx/sites-enabled/.`  
+    ` /etc/nginx/conf.d/ ` or  `/etc/nginx/sites-enabled/.`   
+    - server module could be in default.conf and referenced in main conf using include : `include /etc/nginx/conf.d/*.conf;`
+## 1. How Nginx Works
+   
 **web server root directory for finding files**
  n a standard web server configuration, you define this inside your `server` or `location` block.
  ```
