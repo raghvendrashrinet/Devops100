@@ -1,4 +1,72 @@
 ## MySQL Cheat Sheet & Architecture Guide
+
+```
+========================================================================
+=                      MySQL Architecture Guide                      =
+========================================================================
+
++------------------------------------------------------------------+
+| Client Applications (Web, BI Tools, Drivers)                     |
++-------+----------------------------------------------------------+
+        |  Network Protocol (e.g., TCP/IP on 3306)
+        v
++------------------------------------------------------------------+
+|              MySQL Server Instance (Logical Server)              |
+|                                                                  |
+|  +---------------------+                                         |
+|  | Connection Manager  |                                         |
+|  | (Handles threads)   |                                         |
+|  +---------+-----------+                                         |
+|            |                                                     |
+|  +---------v-----------+  [my.cnf]                               |
+|  | Parser &            |  `max_connections`                      |
+|  | Preprocessor        |  `bind-address`                         |
+|  +---------+-----------+                                         |
+|            |                                                     |
+|  +---------v-----------+  [EXPLAIN]                              |
+|  | Query Optimizer &  |  Checks index availability               |
+|  | Execution Plan      |  Selects lowest-cost plan                |
+|  +---------+-----------+                                         |
+|            |                                                     |
+|  +---------v-----------+                                         |
+|  | Query Executor      |-----------------+                       |
+|  | (Calls Storage API) |                 |                       |
+|  +---------+-----------+                 v                       |
+|            |                      +------+------+                |
+|            |                      | Binary Log  |                |
+|            |                      | (binlog)    |                |
+|            |                      +------+------+                |
+|            |                             |                       |
+|            |                             |                       |
++------------+-----------------------------+-----------------------+
+             | Storage Engine API (Calls & Callbacks)
+             v
++-----------------------------------------+------------------------+
+|          Storage Engines (InnoDB)       |  +------------------+  |
+|                                         |  | (MyISAM / Others)|  |
+|  +-------------------+                  |  +------------------+  |
+|  | InnoDB Buffer Pool|--+               |                        |
+|  | (RAM Cache)       |  |               |                        |
+|  | Data & Indexes    |<-+ Read/Write    |                        |
+|  +---------+---------+   Data Pages     |                        |
+|            |                            |                        |
+|  +---------v---------+   Redo Logs      |                        |
+|  | Redo Log Buffer  |---+ flushed       |                        |
+|  | (Memory)          |                  |                        |
+|  +-------------------+   sequentially   |                        |
++------------+----------------------------+------------------------+
+             | File System (Flushing & Sync)
+             v
++------------------------------------------------------------------+
+|                      File System & Disks                         |
+|                                                                  |
+|  +-------------------+  +---------------+  +------------------+  |
+|  | Data Files (.ibd) |  | Undo Logs     |  | Redo Logs        |  |
+|  | Table Data/Index  |  | (ROLLBACK)    |  | (ib_logfile0, 1) |  |
+|  +-------------------+  +---------------+  +------------------+  |
+|                                            | (ACID Recovery)  |  |
++--------------------------------------------+------------------+--+
+```
 ####  1. Installation Process (Ubuntu/Debian)
 ```bash
 # 1. Update the local package index
