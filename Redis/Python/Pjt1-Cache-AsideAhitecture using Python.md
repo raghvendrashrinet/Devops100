@@ -12,7 +12,41 @@ source venv/bin/activate  # On Windows use: venv\Scripts\activate
 # fastapi: The web framework, uvicorn: The ASGI server, redis: The Redis client
 pip install fastapi uvicorn redis python-dotenv
 ```
-
+####  Networking Interactions (ASCII Diagram)
+When you run your application, two entirely separate network connection boundaries are established:
+1. The Client-to-App Boundary (HTTP)
+2. The App-to-Cache Boundary (TCP/RESP Protocol)
+```text
+[ CLIENT ]                                [ FASTAPI APP ]                           [ REDIS SERVER ]               [ PRIMARY DB ]
+(Web Browser)                             (Python Runtime)                           (In-Memory RAM)               (Postgres/MySQL)
+                                            [Port 8000]                                [Port 6379]               [Port 5432 / 3306]
+      |                                          |                                          |                              |
+      |  [1] HTTP Request                        |                                          |                              |
+      |=======> (Target: Port 8000) ===========>|                                          |                              |
+      |         Endpoint: GET /api/products/42   |                                          |                              |
+      |                                          |  [2] Check Cache First                   |                              |
+      |                                          |=======> (Target: Port 6379) ===========>|                              |
+      |                                          |         Command: GET product:42          |                              |
+      |                                          |                                          |                              |
+      |                                          |  [3] CACHE MISS (Returns Null)           |                              |
+      |                                          |<======= (Key does not exist) ============|                              |
+      |                                          |                                          |                              |
+      |                                          |  [4] Fallback: Query Primary DB          |                              |
+      |                                          |========================================================================>|
+      |                                          |      Command: SELECT * FROM products...  |                              |
+      |                                          |                                          |                              |
+      |                                          |  [5] DB Returns Master Record            |                              |
+      |                                          |<========================================================================|
+      |                                          |      Payload: Heavy Disk I/O Data        |                              |
+      |                                          |                                          |                              |
+      |                                          |  [6] Populate Cache (Asynchronous Write) |                              |
+      |                                          |=======> (Target: Port 6379) ===========>|                              |
+      |                                          |         Command: SET product:42 ex=300   |                              |
+      |                                          |                                          |                              |
+      |  [7] HTTP Response                       |                                          |                              |
+      |<======= (Status 200 OK) =================|                                          |                              |
+      |         Payload: Fresh DB Data           |                                          |                              |
+```
 #### Step 2: Establishing the Redis Connection Pool
 `redis_client.py`: This file acts as our singleton interface, setting up a resilient connection pool that handles sudden network blips gracefully.
 ```Python
