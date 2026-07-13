@@ -12,6 +12,20 @@ source venv/bin/activate  # On Windows use: venv\Scripts\activate
 # fastapi: The web framework, uvicorn: The ASGI server, redis: The Redis client
 pip install fastapi uvicorn redis python-dotenv
 ```
+#### Start Redis Server
+```
+#or use apt install
+  apt install redis
+# start redis 
+  systemctl status redis
+ or both works
+  systemctl start redis-server
+
+## Check redis is working
+ > redis-cli ping
+  PONG
+```
+
 ####  Networking Interactions (ASCII Diagram)
 When you run your application, two entirely separate network connection boundaries are established:
 1. The Client-to-App Boundary (HTTP)
@@ -157,9 +171,13 @@ if __name__ == "__main__":
 
 #### Step 5: Live Testing & Execution Trace
 Fire up your service by running:
-`python main.py`
+```
+python main.py
+
+## It automatically pulls in the other files 
 
 - Open up your terminal or a web browser and fire two consecutive queries for product ID 42:
+```
 ###### First Call (Cache Miss)
 ```
 curl http://127.0.0.1:8000/api/products/42
