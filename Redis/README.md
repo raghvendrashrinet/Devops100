@@ -46,4 +46,89 @@ n modern system design, Redis is rarely used as the sole primary database. Inste
 - Single-Threaded Core Event Loop: Redis executes commands sequentially using a single thread and multiplexed I/O (via epoll).
 - Ephemeral vs. Persistent: While it is an in-memory store, Redis can persist data to disk asynchronously. It uses RDB (Redis Database snapshots) to take periodic point-in-time backups, and AOF (Append Only File) logs to record every write operation sequentially, ensuring data isn't completely lost if the server restarts.
 
-     
+
+---
+## 🏗️ Redis Architecture Topologies
+Redis can be deployed in several architectural configurations depending on your application's requirements for scale, performance, and uptime. Below are the four primary deployment models.
+1. **Standalone**: A single server instance handling all traffic.
+2. **Replication**: One Primary node handles writes & continuously syncs data down to multiple Read-Only Replica nodes.
+3. **Sentinel**: A Primary-Replica setup managed by monitoring processes that automatically handle failover if the primary crashes.
+4. **Cluster**: Automatically splits (shards) your data across multiple physical servers to scale memory capacity horizontally.
+
+
+####
+1. Standalone (Single Instance)The simplest deployment model. One application layer talks directly to one isolated Redis instance.How it works: A single Redis process handles both read and write operations.Best Used For: Local development,  a Single Point of Failure (SPOF). If the instance crashes, the caching layer goes offline
+
+```text      
+      +-----------------------+
+       |   FastAPI App Layer   |
+       +-----------+-----------+
+                   |
+     [Reads & Writes (Port 6379)]
+                   |
+                   v
+       +-----------------------+
+       |   Standalone Redis    |
+       |     (Master Node)     |
+       +-----------------------+
+```
+2. Replication (Primary-Replica)Designed to handle high-volume read traffic by splitting the workload across multiple instances.How it works: One Primary (Master) node accepts all write operations (SET, DEL). The data is asynchronously copied to one or more Replica nodes. The application redirects read traffic (GET) to the replicas.Best Used For: Read-heavy applications that need to scale horizontal read capacity.Limitation: It does not provide automatic failover. If the Primary goes down, manual intervention is required to promote a replica.
+```text
+                   +-----------------------+
+                    |   FastAPI App Layer   |
+                    +-----+-----------+-----+
+                          |           |
+               [Writes Only]         [Reads Only]
+                          |           |
+                          v           v
+               +------------+       +------------+
+               |  Primary   |======>|  Replica   |
+               | (Port 6379)|       | (Port 6379)|
+               +------------+       +------------+
+                    (Data Replication Pipe)
+```
+4. Redis Sentinel (High Availability)Introduces an orchestration layer over the Primary-Replica model to automate health monitoring and failover.How it works: A group of independent Sentinel processes constantly ping the Primary and Replica nodes. If the Primary goes down, the Sentinels form a quorum (vote) and automatically promote an available Replica to become the new Primary.Best Used For: Production environments requiring high availability ($99.99\%$ uptime) without manual data sharding.
+```text
+                        +-----------------------+
+                        |   FastAPI App Layer   |
+                        +-----------+-----------+
+                                    |
+                       [Queries via Sentinels]
+                                    |
+                                    v
+  +-------------------------------------------------------------------+
+  |                       HEALTH & FAILOVER TIER                      |
+  |  [Sentinel 1]  <=======>  [Sentinel 2]  <=======>  [Sentinel 3]   |
+  +--------+------------------------+------------------------+--------+
+           |                        |                        |
+     (Monitors Health)        (Monitors Health)        (Monitors Health)
+           |                        |                        |
+           v                        v                        v
+  +------------------+     +------------------+     +------------------+
+  |  Primary Node    |====>|   Replica One    |====>|   Replica Two    |
+  |   (Port 6379)    |     |   (Port 6379)    |     |   (Port 6379)    |
+  +------------------+     +------------------+     +------------------+
+```
+6. Redis Cluster (Horizontal Sharding)Scales horizontally out across multiple physical servers when your total dataset size exceeds the memory capacity of a single computer.How it works: The data space is automatically broken into 16,384 hash slots and divided among multiple Primary nodes. For instance, Server 1 holds keys matching slots 0-5460, Server 2 holds slots 5461-10922, etc. Each Primary is backed up by its own Replica.Best Used For: Enterprise-grade datasets scaling into terabytes of active in-memory storage.
+```text
+                        +-----------------------+
+                        |   FastAPI App Layer   |
+                        +-----+-------+-------+-+
+                              |       |       |
+                [Slots 0-5460]|       |       |[Slots 10923-16383]
+                              | [Slots 5461-10922]
+                              v       v       v
+  +---------------------------+-------+-------+-----------------------+
+  | CLUSTER TIER                                                      |
+  |                                                                   |
+  |  +----------------+     +----------------+     +----------------+ |
+  |  | Primary Node 1 |     | Primary Node 2 |     | Primary Node 3 | |
+  |  +-------+--------+     +-------+--------+     +-------+--------+ |
+  |          |                      |                      |          |
+  |    (Replicates)           (Replicates)           (Replicates)     |
+  |          v                      v                      v          |
+  |  +-------+--------+     +-------+--------+     +-------+--------+ |
+  |  | Replica Node 1 |     | Replica Node 2 |     | Replica Node 3 | |
+  |  +----------------+     +----------------+     +----------------+ |
+  +-------------------------------------------------------------------+
+```
