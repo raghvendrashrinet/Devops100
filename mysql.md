@@ -67,6 +67,8 @@
 |                                            | (ACID Recovery)  |  |
 +--------------------------------------------+------------------+--+
 ```
+ Where the Files Are Stored (Default Locations)
+  `Linux (Ubuntu, Debian, CentOS):/var/lib/mysql/`
 ####  1. Installation Process (Ubuntu/Debian)
 ```bash
 # 1. Update the local package index
