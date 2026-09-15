@@ -180,10 +180,15 @@ It is ideal when you are in the middle of a code change but need to urgently swi
   or  : `git stash apply stash@{1}'
      ---
      ### Git Merge
-     If you stand on the master branch and run git merge feature, Git will perform a Fast-Forward merge.Because master is a direct ancestor of feature (no other commits were made on master since they split), Git does not need to combine any conflicting code. It will simply slide the master pointer forward to match feature.What Your Log Will Look Like After the MergeBoth branches will point to the exact same commit hash:texte56125e (HEAD -> master, origin/feature, feature) Update welcome.txt
-a7196e2 Update info.txt
-30be729 (origin/master) Add welcome.txt
-7a98941 initial commit
+     If you stand on the master branch and run git merge feature,
+     - Git will perform a Fast-Forward merge.Because master is a direct ancestor of feature (no other commits were made on master since they split),
+     - Git does not need to combine any conflicting code. It will simply slide the master pointer forward to match feature.
+     - What Your Log Will Look Like After the Merge    
+  Both branches will point to the exact same commit hash:`texte56125e (HEAD -> master, origin/feature, feature)`
+Update welcome.txt    
+a7196e2 Update info.txt  
+30be729 (origin/master) Add welcome.txt  
+7a98941 initial commit  
 Critical Step Before Running the CommandYou must ensure you are standing on the receiving branch (master) first. If you run the command right now while HEAD is on feature, Git will say Already up to date.Run these exact commands to complete the merge correctly:bash# 1. Switch over to the master branch
 git switch master
 
