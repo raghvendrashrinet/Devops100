@@ -112,8 +112,8 @@ Let's assume you ran `git remote -v` and your two remotes are named origin (e.g.
  It is the safest way to undo errors on shared or public repositories because it does not rewrite history. It leaves the old mistake in the log but safely cancels out its changes.  
  - To revert a specific commit
    ` git revert <commit-hash>`
- 1. Run git log --oneline to find the bad commit hash (e.g., a1b2c3d)
- 2. Run git revert a1b2c3d.
+ 1. Run `git log --oneline` to find the bad commit hash (e.g., a1b2c3d)
+ 2. Run `git revert a1b2c3d`.
  3. Git will automatically open a text editor asking for a commit message
  4. Save and close the editor. Git will create a new commit named` "Revert 'Add broken feature'"`
  #####  Revert Without Instantly Committing
