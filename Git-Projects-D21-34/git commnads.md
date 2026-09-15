@@ -295,7 +295,7 @@ Imagine your project folder currently has 3 commits in its history:
     - Best used when: Your recent work went completely wrong, you want to throw it all away, and start fresh from an older checkpoint.
 #### Example 2 , git local commit is at commit 5, i force to commit 2 using hard rest
   > git reset --hard <commit-2>
-Now the git reomte is at commit 5 ,so git oush failed ,
+Now the git remote is at commit 5 ,so git push failed ,
 > To force commit
 
 > git push --force-with-lease origin master
