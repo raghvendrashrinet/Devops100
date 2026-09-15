@@ -242,10 +242,10 @@ Imagine your repository looks like this:
   Run `git log --oneline` feature to locate the exact hash of the fix. In this case, it is `c7a1b23`
 *  Step 2: Switch to the Target Branch
    ```
-    git switch mainStep 
+    git switch main
    ```
    
-* 3: Run the Cherry-Pick Command
+* Step 3: Run the Cherry-Pick Command
   ```
     git cherry-pick c7a1b23
   ```
